@@ -1,0 +1,197 @@
+import { cv } from './ocv';
+import { Color } from './color';
+import { Image } from './image';
+import { Context } from './context';
+import { Util, MinMaxRect, IPoint } from './util';
+
+export class Curve {
+
+    public readonly image: Image;
+    public readonly skImage: Image;
+    public readonly rect: MinMaxRect;
+    public readonly points: Point[];
+    public ctx: Context;
+
+    constructor(image: Image, skImage: Image, rect: cv.Rect, x: number, y: number) {
+        this.image = image;
+        this.skImage = skImage;
+        this.rect = Util.toMinMaxRect(rect);
+        //this.dumpIt();
+        this.points = [];
+        this.ctx = image.ctx;
+        let p: Point | undefined = new Point(0, x, y, 270, ["down"], this);
+        this.points.push(p);
+        // Follow
+        for (;;) {
+            p = p.getNext();
+            if (!p) break;
+            this.points.push(p);
+        }
+        for (let i = 0; i < this.points.length; i++) {
+            const p = this.points[i] as Point;
+            const start = Math.max(0, i-2);
+            const end = Math.min(this.points.length, i+3);
+            const buf = this.points.slice(start,end);
+            p.degree = Util.getDegree(buf);
+        }
+    }
+
+    private dumpIt() {
+        console.log(`HERE: BEGIN CURVE: ${JSON.stringify(this.rect)}`);
+        for (let y = this.rect.y.min; y <= this.rect.y.max; y++) {
+            const n: number[] = [];
+            for (let x = this.rect.x.min; x <= this.rect.x.max; x++) {
+                if (this.skImage.isSet(x,y)) n.push(x);
+            }
+            console.log(`row ${y}: `, n);
+        }
+        console.log(`HERE: END CURVE`);
+    }
+
+    public contains(x: number, y: number): boolean {
+        for (let p of this.points) {
+            if (p.x == x && p.y == y) return true;
+        }
+        return false;
+    }
+
+    public dump() {
+        this.ctx.debug(`BEGIN dump of curve points`);
+        for (const p of this.points) {
+            this.ctx.debug(JSON.stringify(p));
+        }
+        this.ctx.debug(`END dump of curve points`);
+    }
+
+    public draw(opts?: {color?: Color}) {
+        opts = opts || {};
+        const color = opts.color || Color.green;
+        for (const p of this.points) {
+            this.image.drawPoint(p.x, p.y, {color});
+        }
+    }
+
+}
+
+export class Point {
+
+    public readonly idx: number;
+    public readonly x: number;
+    public readonly y: number;
+    public degree: number;
+    public readonly neighbors: string[];
+    public readonly curve: Curve;
+    public readonly ctx: Context;
+
+    constructor(idx: number, x: number, y: number, degree: number, neighbors: string[], curve: Curve) {
+        this.idx = idx;
+        this.x = x;
+        this.y = y;
+        this.degree = degree;
+        this.neighbors = neighbors;
+        this.curve = curve;
+        this.ctx = this.curve.ctx;
+    }
+
+    // Get the next point, if any
+    public getNext(): Point | undefined {
+        const ski = this.curve.skImage;
+        const rect = this.curve.rect;
+        const buf: IPoint[] = this.curve.points.slice(Math.max(0,this.idx-2),this.idx+1);
+        let bestDegree: number | undefined;
+        let bestDelta, bestX, bestY: number | undefined;
+        const ns: string[] = [];
+        // Find the neighbor point that is set, is not already in the curve, and most closely matches
+        // the direction.
+        for (const n of neighbors) {
+            const x = this.x + n.x;
+            const y = this.y + n.y;
+            if (!ski.isSet(x, y)) continue;
+            if (!Util.inRect(x, y, rect)) continue;
+            if (this.curve.contains(x,y)) continue;
+            ns.push(n.name);
+            const curDegree = Util.getDegree([...buf, {x,y}]);
+            const curDelta = Util.degreeDelta(this.degree, curDegree);
+            if (bestDelta == undefined || curDelta < bestDelta) {
+                bestDelta = curDelta;
+                bestDegree = curDegree;
+                bestX = x;
+                bestY = y;
+            }
+        }
+        if (bestDelta == undefined) return undefined;
+        return new Point(this.idx+1, bestX as number, bestY as number, bestDegree as number, ns, this.curve);
+    }
+
+    public prev(opts?: { err?: boolean }): Point {
+        opts = opts || {};
+        const err = opts.err || false;
+        const idx = this.idx as number;
+        if (idx == 0) {
+            if (err) throw new Error(`No previous point`);
+            return this;
+        }
+        return this.curve.points[idx - 1] as Point;
+    }
+
+    public equals(p: Point): boolean {
+        return p.x === this.x && p.y === this.y;
+    }
+
+
+    public toJSON(): Object {
+        return { idx: this.idx, x: this.x, y: this.y, degree: this.degree, neighbors: this.neighbors };
+    }
+
+}
+
+interface Neighbor {
+    x: number;
+    y: number;
+    name: string;
+}
+
+// Values to add to X and Y values in order to visit neighbors of a point
+const neighbors: Neighbor[] = [
+    { x: 1, y: 0, name: "right" },
+    { x: 1, y: -1, name: "up-right" },
+    { x: 0, y: -1, name: "up" },
+    { x: -1, y: -1, name: "up-left" },
+    { x: -1, y: 0, name: "left" },
+    { x: -1, y: 1, name: "down-left" },
+    { x: 0, y: 1, name: "down" },
+    { x: 1, y: 1, name: "down-right" },
+];
+
+function getDirIdx(name: string): number {
+    for (let i = 0; i < neighbors.length; i++) {
+        const n = neighbors[i] as Neighbor;
+        if (n.name == name) return i;
+    }
+    throw new Error(`unknown neighbor name: ${name}`);
+}
+
+function turn(dir: number, right: boolean): number {
+    if (right) {
+        dir++;
+        if (dir >= neighbors.length) dir = 0;
+        return dir;
+    } else {
+        dir--;
+        if (dir < 0) dir = neighbors.length - 1;
+        return dir;
+    }
+}
+
+function multiTurn(dir: number, right: boolean, count: number): number {
+    for (let i = 0; i < count; i++) {
+        dir = turn(dir, right);
+    }
+    return dir;
+}
+
+function dirName(i: number): string {
+    if (i < 0 || i >= neighbors.length) throw new Error(`index out of range: ${i}`);
+    const n = neighbors[i] as Neighbor;
+    return n.name;
+}
