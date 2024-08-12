@@ -1,6 +1,6 @@
 # FIN-OCR-SDK Release Notes
 
-This document contains a high level description of each release of FIN-OCR_SDK.
+This document contains a high level description of each release of fin-ocr-sdk.
 
 * 1.0.0
 
