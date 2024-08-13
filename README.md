@@ -2,15 +2,37 @@
 
 This package is a browser and mobile-friendly SDK which provides typescript programmatic APIs to perform OCR (Optical Character Recognition).
 
+> **NOTE:** This SDK is not yet published to npm. It must be cloned and built locally until it is published.
+
 The initial use case supports OCR of bank checks in order to return the routing, account, and check number fields; however, it is designed to support other use cases in the future.
 
-### Getting Started
+## Getting Started
 
-##### How to install 
+#### 1. Build the SDK Locally:
 
-To install the latest npm package: `npm install @discoverfinancial/fin-ocr-sdk`.
+Since the SDK is not yet available on npm, you need to clone the repository and build it locally:
 
-##### Sample code
+```bash
+git clone https://github.com/discoverfinancial/fin-ocr-sdk.git
+cd fin-ocr-sdk
+npm run build
+```
+
+#### 2. Link the SDK Globally:
+To use this locally built SDK in another project, it must be "linked", this makes the SDK available to other projects:
+
+```bash
+npm link
+```
+After this step, navigate to your project where you want to use the SDK and link it:
+e.g.
+```bash
+cd your-project
+npm link @discoverfinancial/fin-ocr-sdk
+```
+You can now import and use the SDK in your project just as you would with any npm package.
+
+### Sample code
 
 The following is a sample code snippet demonstrating how to use this SDK to OCR a bank check.
 
