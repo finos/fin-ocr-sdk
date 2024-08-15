@@ -3,6 +3,7 @@
 */
 import { cv } from "./ocv.js";
 import { ImageFormat } from "./image.js";
+import { Contour, FilterContourOpts } from "./contour.js";
 import { encode, decode } from "base64-arraybuffer-es6";
 import { loadJimp } from './jimp.js';
 
@@ -601,5 +602,13 @@ export class Util {
         for (let y = r.y.min; y <= r.y.max; y++) cb(r.x.max, y);  // right
         for (let x = r.x.max; x >= r.x.min; x--) cb(x, r.y.max);  // bottom
         for (let y = r.y.max; y >= r.y.min; y--) cb(r.x.min, y);  // bottom
+    }
+
+    public static filterContours(contours: Contour[], filter: FilterContourOpts): Contour[] {
+        const rtn: Contour[] = [];
+        for (const contour of contours) {
+            if (!contour.filter(filter)) rtn.push(contour);
+        }
+        return rtn;
     }
 }

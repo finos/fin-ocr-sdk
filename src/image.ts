@@ -4,7 +4,7 @@
 import { cv } from './ocv.js';
 import { Config } from './config.js';
 import { Context } from './context.js';
-import { Contour } from './contour.js';
+import { Contour, FilterContourOpts } from './contour.js';
 import { Color } from './color.js';
 import { Line } from './line.js';
 import { OCR } from './ocr.js';
@@ -25,17 +25,10 @@ export interface CropArgs {
     end?: CropFraction;
 }
 
-export interface GetContoursOpts {
+export interface GetContoursOpts extends FilterContourOpts {
     name?: string;
     mode?: number;
     method?: number;
-    minWidth?: number;
-    minHeight?: number;
-    minArea?: number;
-    maxWidth?: number;
-    maxHeight?: number;
-    maxArea?: number;
-    borders?: string[];  // contours touching these borders will be excluded
 };
 
 export interface PerformOverlapCorrectionOpts extends GetContoursOpts {
@@ -427,59 +420,21 @@ export class Image {
 
     public getContourInfo(opts?: GetContoursOpts): ContourInfo {
         opts = opts || {};
-        const name = opts.name || this.name;
         const mode = opts.mode || cv.RETR_EXTERNAL;
         const method = opts.method || cv.CHAIN_APPROX_SIMPLE;
-        const borders = opts.borders;
         const vector = this.newMatVector();
         const hierarchy = this.newMat();
         let mat = this.mat;
         cv.findContours(mat, vector, hierarchy, mode, method);
         if (this.ctx.isDebugEnabled()) this.ctx.debug(`total number of contours returned by opencv: ${vector.size()}`);
-        const contours: Contour[] = [];
+        let contours: Contour[] = [];
         for (let i = 0; ; i++) {
             const c = vector.get(i);
             if (!c) break;
-            const rect = cv.boundingRect(c);
-            if (borders && Util.rectTouchesBorder(rect, mat, borders)) {
-                if (this.ctx.isDebugEnabled()) this.ctx.debug(`skip ${name} contour ${i}, touches one of the ${JSON.stringify(borders)} borders: ${JSON.stringify(rect)}`);
-                c.delete();
-                continue;
-            }
-            if (opts.minWidth && rect.width < opts.minWidth) {
-                if (this.ctx.isDebugEnabled()) this.ctx.debug(`skip ${name} contour ${i}, width ${rect.width} < ${opts.minWidth}`);
-                c.delete();
-                continue;
-            }
-            if (opts.minHeight && rect.height < opts.minHeight) {
-                if (this.ctx.isDebugEnabled()) this.ctx.debug(`skip ${name} contour ${i}, height ${rect.height} < ${opts.minHeight}`);
-                c.delete();
-                continue;
-            }
-            if (opts.maxWidth && rect.width > opts.maxWidth) {
-                if (this.ctx.isDebugEnabled()) this.ctx.debug(`skip ${name} contour ${i}, width ${rect.width} > ${opts.maxWidth}`);
-                c.delete();
-                continue;
-            }
-            if (opts.maxHeight && rect.height > opts.maxHeight) {
-                if (this.ctx.isDebugEnabled()) this.ctx.debug(`skip ${name} contour ${i}, height ${rect.height} > ${opts.maxHeight}`);
-                c.delete();
-                continue;
-            }
-            const area = cv.contourArea(c);
-            if (opts.minArea && area < opts.minArea) {
-                if (this.ctx.isDebugEnabled()) this.ctx.debug(`skip ${name} contour ${i}, area ${area} < ${opts.minArea}`);
-                c.delete();
-                continue;
-            }
-            if (opts.maxArea && area > opts.maxArea) {
-                if (this.ctx.isDebugEnabled()) this.ctx.debug(`skip ${name} contour ${i}, area ${area} > ${opts.maxArea}`);
-                c.delete();
-                continue;
-            }
             this.ctx.addDeletable(c);
             contours.push(new Contour(c, this));
         }
+        contours = Util.filterContours(contours, opts);
         // Sort left-to-right
         contours.sort((a, b) => a.rect.x - b.rect.x);
         for (let idx = 0; idx < contours.length; idx++) {

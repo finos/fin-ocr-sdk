@@ -246,12 +246,7 @@ export class Check {
         img = img.adaptiveThreshold(cv.ADAPTIVE_THRESH_GAUSSIAN_C, cv.THRESH_BINARY_INV, { name: "micr-thresh", blockSize: 19, C: 1 });
         // Get the line info
         let li = this.findMicrLineInfo(img, 1, {
-            getContoursOpts: {
-                minArea: this.cfg.minContourArea,
-                minHeight: this.cfg.minContourHeight,
-                minWidth: this.cfg.minContourWidth,
-                maxWidth: img.width * 0.9,
-            },
+            getContoursOpts: { maxWidth: img.width * 0.9 },
             stopScore: opts.stopScore,
         });
         if (!li) {
@@ -280,7 +275,7 @@ export class Check {
         let bestScore = 0;
         let bestContour: Contour | undefined;
         // Get contours from the image, filtering out those we want to ignore
-        const contours = img.getContours(opts.getContoursOpts);
+        let contours = img.getContours(opts.getContoursOpts);
         if (ctx.debugImages) img.drawContours({ name: `image-contours-${count}`, contours });
         // Sort contours bottom to top
         contours.sort((a, b) => b.rect.y - a.rect.y);
@@ -302,6 +297,12 @@ export class Check {
             return undefined;
         }
         if (ctx.debugImages) img.drawBox(`best-zero-${count}`, bestContour.rect);
+        // Filter contours based on the size of the best contour
+        contours = Util.filterContours(contours, {
+             minArea: bestContour.area2 * 0.03,
+             minHeight: bestContour.height * 0.1,
+             minWidth: bestContour.width * 0.08,
+        });
         // Create a line based on the best contour
         const minCharArea = bestContour.area * 0.47;
         const maxCharArea = bestContour.area * 1.25;

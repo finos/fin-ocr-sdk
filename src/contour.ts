@@ -19,6 +19,16 @@ interface XYMinMax {
     y: MinMax;
 }
 
+export interface FilterContourOpts {
+    minWidth?: number;
+    minHeight?: number;
+    minArea?: number;
+    maxWidth?: number;
+    maxHeight?: number;
+    maxArea?: number;
+    borders?: string[];  // contours touching these borders will be excluded
+};
+
 export class Contour {
 
     public readonly mat: cv.Mat;
@@ -29,6 +39,7 @@ export class Contour {
     public width: number;
     public height: number;
     public area: number;
+    public area2: number;
     public size?: ContourSize;
     public inLine = false;
     public overlap = false;
@@ -45,7 +56,45 @@ export class Contour {
         this.width = this.rect.width;
         this.height = this.rect.height;
         this.area = this.width * this.height;
+        this.area2 = cv.contourArea(mat);
         this.midX = Util.midX(this.rect);
+    }
+
+    public filter(opts: FilterContourOpts): boolean {
+        const rect = this.rect;
+        const mat = this.mat;
+        const i = this.idx;
+        const borders = opts.borders;
+        if (borders && Util.rectTouchesBorder(rect, mat, borders)) {
+            if (this.ctx.isDebugEnabled()) this.ctx.debug(`skip contour ${i}, touches one of the ${JSON.stringify(borders)} borders: ${JSON.stringify(rect)}`);
+            return true;
+        }
+        if (opts.minWidth && rect.width < opts.minWidth) {
+            if (this.ctx.isDebugEnabled()) this.ctx.debug(`skip contour ${i}, width ${rect.width} < ${opts.minWidth}`);
+            return true;
+        }
+        if (opts.minHeight && rect.height < opts.minHeight) {
+            if (this.ctx.isDebugEnabled()) this.ctx.debug(`skip contour ${i}, height ${rect.height} < ${opts.minHeight}`);
+            return true;
+        }
+        if (opts.maxWidth && rect.width > opts.maxWidth) {
+            if (this.ctx.isDebugEnabled()) this.ctx.debug(`skip contour ${i}, width ${rect.width} > ${opts.maxWidth}`);
+            return true;
+        }
+        if (opts.maxHeight && rect.height > opts.maxHeight) {
+            if (this.ctx.isDebugEnabled()) this.ctx.debug(`skip contour ${i}, height ${rect.height} > ${opts.maxHeight}`);
+            return true;
+        }
+        const area = this.area2;
+        if (opts.minArea && area < opts.minArea) {
+            if (this.ctx.isDebugEnabled()) this.ctx.debug(`skip contour ${i}, area ${area} < ${opts.minArea}`);
+            return true;
+        }
+        if (opts.maxArea && area > opts.maxArea) {
+            if (this.ctx.isDebugEnabled()) this.ctx.debug(`skip contour ${i}, area ${area} > ${opts.maxArea}`);
+            return true;
+        }
+        return false;
     }
 
     public isSmall(): boolean {
@@ -302,7 +351,7 @@ export class Contour {
     }
 
     public toJSON() {
-        return { idx: this.idx, size: this.size, overlap: this.overlap, rect: this.rect };
+        return { idx: this.idx, size: this.size, overlap: this.overlap, rect: this.rect, area: this.area, area2: this.area2 };
     }
 
 }
