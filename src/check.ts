@@ -207,9 +207,16 @@ export class Check {
         if (ctx.debugImages) img.display();
         // Clean the image
         // NOTE: We dilate/erode rather than erode/dilate b/c the image is white-on-black, not black-on-white yet
+        const isWhiteBackground = this.isWhiteBackground(img);
+        // Clean the image based on background color
         const cleanOpts = { width: 2, height: 2 };
-        img = img.dilate(cleanOpts);
-        img = img.erode(cleanOpts);
+        if (isWhiteBackground) {
+            img = img.erode(cleanOpts);
+            img = img.dilate(cleanOpts);
+        } else {
+            img = img.dilate(cleanOpts);
+            img = img.erode(cleanOpts);
+        }
         if (ctx.debugImages) img.display("clean");
         // By default, crop the bottom of the image since the MICR line is there.
         const cropArgs = req.crop || { begin: { height: 0.60 } };
@@ -234,6 +241,26 @@ export class Check {
         }
         if (ctx.isDebugEnabled()) ctx.debug(`Could not find the MICR line for check ${this.id}`);
         return undefined;
+    }
+
+    private isWhiteBackground(img: Image): boolean {
+        const grayImg = img.grayScale();
+        const totalPixels = grayImg.width * grayImg.height;
+        const sampleRate = 10; //
+
+        let pixelSum = 0;
+        let sampledPixels = 0;
+
+        for (let y = 0; y < grayImg.height; y += sampleRate) {
+            for (let x = 0; x < grayImg.width; x += sampleRate) {
+                pixelSum += grayImg.getPixelVal(x, y);
+                sampledPixels++;
+            }
+        }
+
+        const avgPixelValue = pixelSum / sampledPixels;
+
+        return avgPixelValue > 128;
     }
 
     private findMicrLine(img: Image, opts?: { stopScore?: number }): Line | undefined {
