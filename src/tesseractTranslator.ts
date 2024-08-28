@@ -46,9 +46,11 @@ export class TesseractTranslator implements Translator {
     private font = "eng";
     private psm: any;
     private trainedDatas: {font:string, trainedData: string}[] = [];
+    private tessdataPath: string;
 
     public constructor(ocr: OCR) { 
         this.ocr = ocr;
+        this.tessdataPath = process.env.TESSDATA_PREFIX ? process.env.TESSDATA_PREFIX + '/tessdata/' : '.';
     }
 
     public async init(args: TesseractTranslatorInitArgs, ctx: Context) {
@@ -57,7 +59,7 @@ export class TesseractTranslator implements Translator {
         this.setPSM(args.pageSegmentationMode);
         // NOTE: The traineddata files for the supported fonts are bundled with the SDK.
         // However, I have not been able to get tesseract to recognize those loaded with the "worker.writeText" in the "getWorker" function below.
-        this.initFonts();
+        //this.initFonts();
     }
 
     private initFonts() {
@@ -122,7 +124,9 @@ export class TesseractTranslator implements Translator {
         }
         const count = ++this.workerCount;
         if (ctx.isDebugEnabled()) ctx.debug(`Creating tesseract worker ${count}`);
-        const worker = await createWorker();
+        const worker = await createWorker({
+            langPath: this.tessdataPath,
+        });
         for (const ele of self.trainedDatas) {
             await worker.writeText(`${ele.font}.traineddata`, ele.trainedData);
         }
