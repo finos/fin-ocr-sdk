@@ -48,9 +48,9 @@ export class TesseractTranslator implements Translator {
     private trainedDatas: {font:string, trainedData: string}[] = [];
     private tessdataPath: string;
 
-    public constructor(ocr: OCR) { 
+    public constructor(ocr: OCR) {
         this.ocr = ocr;
-        this.tessdataPath = process.env.TESSDATA_PREFIX ? process.env.TESSDATA_PREFIX + '/tessdata/' : '.';
+        this.tessdataPath = process.env.TESSDATA_PREFIX ? process.env.TESSDATA_PREFIX : '.';
     }
 
     public async init(args: TesseractTranslatorInitArgs, ctx: Context) {
