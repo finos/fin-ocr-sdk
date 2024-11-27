@@ -1,3 +1,4 @@
+[![DFS - Incubating](./_images/discover-incubating.svg)](https://technology.discover.com/technologies/open_source) [![Contributors-Invited](https://img.shields.io/badge/Contributors-Wanted-blue)](./CONTRIBUTE.md)
 # FIN OCR SDK
 
 This package is a browser and mobile-friendly SDK which provides typescript programmatic APIs to perform OCR (Optical Character Recognition).
