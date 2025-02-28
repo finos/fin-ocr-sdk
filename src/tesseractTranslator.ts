@@ -112,7 +112,7 @@ export class TesseractTranslator implements Translator {
     if (ctx.isDebugEnabled()) ctx.debug(`Calling tesseract`);
     const result = await worker.recognize(buf as any);
     const data = result.data;
-    const value = data.text || "";
+    const value = (data.text || "").trim();
     const score = data.confidence;
     const chars: TranslatorChar[] = debug
       ? this.toChars(data.symbols, img, ctx)
