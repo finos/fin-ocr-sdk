@@ -14,7 +14,7 @@ The initial use case supports OCR of bank checks in order to return the routing,
 Since the SDK is not yet available on npm, you need to clone the repository and build it locally:
 
 ```bash
-git clone https://github.com/discoverfinancial/fin-ocr-sdk.git
+git clone https://github.com/finos/fin-ocr-sdk.git
 cd fin-ocr-sdk
 npm run build
 ```
@@ -29,7 +29,7 @@ After this step, navigate to your project where you want to use the SDK and link
 e.g.
 ```bash
 cd your-project
-npm link @discoverfinancial/fin-ocr-sdk
+npm link @finos/fin-ocr-sdk
 ```
 You can now import and use the SDK in your project just as you would with any npm package.
 
@@ -38,7 +38,7 @@ You can now import and use the SDK in your project just as you would with any np
 The following is a sample code snippet demonstrating how to use this SDK to OCR a bank check.
 
 ```
-import * as ocr from "@discoverfinancial/fin-ocr-sdk";
+import * as ocr from "@finos/fin-ocr-sdk";
 import * as fs from 'fs';
 
 // Scan a check image contained in 'file' of TIFF format
