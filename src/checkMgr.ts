@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2024 Discover Financial Services
+ * Copyright (c) 2024 Capital One
 */
 import { OCR, Platform } from "./ocr.js";
 import { Check, CheckScanRequest, CheckScanResponse, CheckPreprocessRequest, CheckPreprocessResponse } from "./check.js"; 

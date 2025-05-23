@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2024 Discover Financial Services
+ * Copyright (c) 2024 Capital One
 */
 import { Config, ConfigOpts } from "./config.js";
 import { Context } from "./context.js";

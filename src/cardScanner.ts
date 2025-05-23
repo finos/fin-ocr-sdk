@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2024 Discover Financial Services
+ * Copyright (c) 2024 Capital One
 */
 import { Platform, NewImageOpts } from "./ocr.js";
 import { ImageFormat  } from "./image.js";

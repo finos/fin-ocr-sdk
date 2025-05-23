@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2024 Discover Financial Services
+ * Copyright (c) 2024 Capital One
 */
 import { Util } from "./util.js";
 import { FSFileInfo, FSFileType, FSDirValue, OSFileSystem } from "./fsInterfaces.js";

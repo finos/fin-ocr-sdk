@@ -1,4 +1,4 @@
-[![DFS - Incubating](./_images/discover-incubating.svg)](https://technology.discover.com/technologies/open_source) [![Contributors-Invited](https://img.shields.io/badge/Contributors-Wanted-blue)](./CONTRIBUTE.md)
+[![FINOS - Incubating](https://cdn.jsdelivr.net/gh/finos/contrib-toolbox@master/images/badge-incubating.svg)](https://community.finos.org/docs/governance/Software-Projects/stages/incubating) [![Contributors-Invited](https://img.shields.io/badge/Contributors-Wanted-blue)](./CONTRIBUTE.md)
 # FIN OCR SDK
 
 This package is a browser and mobile-friendly SDK which provides typescript programmatic APIs to perform OCR (Optical Character Recognition).
@@ -14,7 +14,7 @@ The initial use case supports OCR of bank checks in order to return the routing,
 Since the SDK is not yet available on npm, you need to clone the repository and build it locally:
 
 ```bash
-git clone https://github.com/discoverfinancial/fin-ocr-sdk.git
+git clone https://github.com/finos/fin-ocr-sdk.git
 cd fin-ocr-sdk
 npm run build
 ```
@@ -29,7 +29,7 @@ After this step, navigate to your project where you want to use the SDK and link
 e.g.
 ```bash
 cd your-project
-npm link @discoverfinancial/fin-ocr-sdk
+npm link @finos/fin-ocr-sdk
 ```
 You can now import and use the SDK in your project just as you would with any npm package.
 
@@ -38,7 +38,7 @@ You can now import and use the SDK in your project just as you would with any np
 The following is a sample code snippet demonstrating how to use this SDK to OCR a bank check.
 
 ```
-import * as ocr from "@discoverfinancial/fin-ocr-sdk";
+import * as ocr from "@finos/fin-ocr-sdk";
 import * as fs from 'fs';
 
 // Scan a check image contained in 'file' of TIFF format
@@ -84,7 +84,43 @@ It uses the following open source projects:
 
 * `opencv.js` to perform various image pre-processing operations such as locating special symbols on an image, cropping and cleaning an image, etc;
 
-* `tesseract.js` to translate text on a (preferrably clean) image.
+* `tesseract.js` to translate text on a (preferably clean) image.
+
+## Roadmap
+
+1. Deploy SDK to npm
+
+## Contributing
+
+This document provides guidance for how YOU can collaborate with our project community to improve this technology.
+
+[FIN-OCR Contribution](https://github.com/finos/fin-ocr/blob/main/CONTRIBUTE.md)
+
+## Scans
+### Vulnerability Report
+
+To generate a report containing any vulnerabilities in any dependency please use:
+
+```bash
+$npm run scan
+```
+
+### License Report
+
+```bash
+npm run scan-license
+```
+
+**Note:** Each of these scans should be run and problems addressed by a developer prior to submitting code that uses new packages.
+
+## License
+
+Copyright 2024 Capital One
+
+Distributed under the [Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0).
+
+SPDX-License-Identifier: [Apache-2.0](https://spdx.org/licenses/Apache-2.0)
+
 
 ### Links
 
