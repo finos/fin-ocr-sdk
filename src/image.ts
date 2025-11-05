@@ -134,10 +134,10 @@ export const neighbors: Neighbor[] = [
  **/
 export class Image {
 
-    public static fromBuffer(buf: ArrayBuffer, ocr: OCR, ctx: Context, opts?: { name?: string, format?: ImageFormat }): Image {
+    public static async fromBuffer(buf: ArrayBuffer, ocr: OCR, ctx: Context, opts?: { name?: string, format?: ImageFormat }): Promise<Image> {
         opts = opts || {};
         const name = opts.name || "original";
-        const mat = Util.bufferToMat(buf, opts);
+        const mat = await Util.bufferToMat(buf, opts);
         ctx.addDeletable(mat);
         return new Image(name, mat, ocr, ctx);
     }

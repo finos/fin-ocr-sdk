@@ -5,13 +5,8 @@ import { cv } from "./ocv.js";
 import { ImageFormat } from "./image.js";
 import { Contour, FilterContourOpts } from "./contour.js";
 import { encode, decode } from "base64-arraybuffer-es6";
-import { loadJimp } from './jimp.js';
-
-let Jimp: typeof import('jimp');
-
-(async () => {
-    Jimp = await loadJimp();
-})();
+import { Jimp } from "jimp";
+import { rgbaToInt } from "jimp";
 
 export interface MinMax {
     min: number;
@@ -57,29 +52,26 @@ export class Util {
         return categories.indexOf(category) >= 0;
     }
 
-    public static bufferToMat(buf: ArrayBuffer, opts?: { format?: ImageFormat }): cv.Mat {
+    public static async bufferToMat(buf: ArrayBuffer, opts?: { format?: ImageFormat }): Promise<cv.Mat> {
         opts = opts || {};
         const format = opts.format || ImageFormat.JPG;
-        if (!Jimp.decoders) {
-            throw new Error(`Jimp.decoders is undefined`);
-        }
         let imageData: any;
         try {
-            imageData = Jimp.decoders[format](Buffer.from(buf));
+            imageData = await Jimp.fromBuffer(buf);
         } catch (e: any) {
-            throw new Error(`Failed to decode ${format}: ${e.message}`)
+            throw new Error(`Failed to read ${format}: ${e.message}`)
         }
         //const width = 20;
         //const height = 20;
         //const imageData = new ImageData(new Uint8ClampedArray(buf),width,height);
-        const mat = cv.matFromImageData(imageData);
+        const mat = cv.matFromImageData(imageData.bitmap);
         return mat;
     }
 
     public static async matToBuffer(mat: cv.Mat, opts?: { format?: ImageFormat }): Promise<ArrayBuffer> {
         opts = opts || {};
         const format = opts.format || ImageFormat.JPG;
-        return await Util.matToJimp(mat).getBufferAsync(format);
+        return await Util.matToJimp(mat).getBuffer(format);
     }
 
     private static matToJimp(mat: cv.Mat): any {
@@ -106,13 +98,13 @@ export class Util {
             throw new Error("matToJimp: Can only support Gray Scale, RGB or RGBA images.");
         }
         const array = new Uint8Array(mat.data);
-        const jimp = new Jimp(width, height);
+        const jimp = new Jimp({width:width, height:height});
         if (channels === 1) {
             for (let y = 0; y < height; y++) {
                 for (let x = 0; x < width; x++) {
                     let idx = y * width + x;
                     let grayScaleValue = array[idx] as number;
-                    jimp.setPixelColor(Jimp.rgbaToInt(grayScaleValue, grayScaleValue, grayScaleValue, 255), x, y);
+                    jimp.setPixelColor(rgbaToInt(grayScaleValue, grayScaleValue, grayScaleValue, 255), x, y);
                 }
             }
         } else {
@@ -126,7 +118,7 @@ export class Util {
                     if (channels === 4) {
                         alpha = array[idx + 3] as number;
                     }
-                    jimp.setPixelColor(Jimp.rgbaToInt(red, green, blue, alpha), x, y);
+                    jimp.setPixelColor(rgbaToInt(red, green, blue, alpha), x, y);
                 }
             }
         }

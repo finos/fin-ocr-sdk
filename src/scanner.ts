@@ -46,7 +46,7 @@ export class Scanner {
     }
 
     public async scan(buf: ArrayBuffer, ctx: Context, opts?: NewImageOpts): Promise<any> {
-        const img = this.ocr.newImage(buf, ctx, opts);
+        const img = await this.ocr.newImage(buf, ctx, opts);
         const sctx: ScannerContext = { scanner: this, img};
         try {
             for (let i = 0; i < this.info.actions.length; i++) {

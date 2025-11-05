@@ -197,7 +197,7 @@ export class Check {
         let buf = req.image.buffer;
         if (typeof buf === "string") buf = this.ocr.platform.base64.decode(buf);
         const format = Image.strToImageFormat(req.image.format);
-        let img = Image.fromBuffer(buf, this.ocr, ctx, { format });
+        let img = await Image.fromBuffer(buf, this.ocr, ctx, { format });
         if (ctx.debugImages) img.display();
         // Get gray scale to make operations more efficient
         img = img.grayScale({ name: "gray" });

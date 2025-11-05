@@ -57,7 +57,7 @@ export class OpencvTranslator implements Translator {
     private async loadReferenceImage(args: OpencvTranslatorInitArgs, ctx: Context) {
         if (ctx.isDebugEnabled()) ctx.debug(`loadReferenceImage: args=${JSON.stringify(args)}`);
         const buf = this.ocr.root.readFile(args.refImage);
-        let img = Image.fromBuffer(buf, this.ocr, ctx, {name: "learn-reference", format: args.format});
+        let img = await Image.fromBuffer(buf, this.ocr, ctx, {name: "learn-reference", format: args.format});
         img = img.grayScale({name: "learn-gray"});
         img = img.threshold(cv.THRESH_BINARY_INV + cv.THRESH_OTSU, {name: "learn-otsu"});
         const contours = img.getContours();
@@ -93,7 +93,7 @@ export class OpencvTranslator implements Translator {
             }
             const tif = dir.readFile(tifFileName);
             const ct = dir.readString(ctFileName).split(":");
-            let image = this.ocr.newImage(tif, ctx, {name: tifFileName, format: ImageFormat.TIF});
+            let image = await this.ocr.newImage(tif, ctx, {name: tifFileName, format: ImageFormat.TIF});
             image = image.grayScale();
             const value = ct[0] as string;
             const numContours = parseInt(ct[1] as string);

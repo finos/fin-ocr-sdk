@@ -95,8 +95,8 @@ export class OCR {
         return Context.obtain(id, this.cfg);
     }
 
-    public newImage(buf: ArrayBuffer, ctx: Context, opts?: NewImageOpts): Image {
-        return Image.fromBuffer(buf, this, ctx, opts);
+    public async newImage(buf: ArrayBuffer, ctx: Context, opts?: NewImageOpts): Promise<Image> {
+        return await Image.fromBuffer(buf, this, ctx, opts);
     }
 
     public newVideoCapture(height: number, width: number, cb: OCRVideoCaptureCallback, opts?: {videoSource?: OCRVideoSource }): OCRVideoCapture {

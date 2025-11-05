@@ -19,7 +19,7 @@ export interface OSFileSystem {
     isDir: (dirName: string) => boolean;
     isFile: (dirName: string) => boolean;
     readDir: (dirName: string) => string[];
-    readFile: (fileName: string) => Buffer;
+    readFile: (fileName: string) => ArrayBuffer;
     writeFile: (fileName: string, buf: Buffer) => void;
     appendFile: (fileName: string, buf: Buffer) => void;
     pathJoin: (...eles: string[]) => string;
