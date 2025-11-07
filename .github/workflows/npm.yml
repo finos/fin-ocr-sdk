@@ -2,7 +2,7 @@ name: Publish to NPM
 on:
   push:
     branches:
-      - add-github-actions
+      - 'add-github-actions'
     paths-ignore:
       - 'docs/**'
 jobs:
