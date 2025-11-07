@@ -8,8 +8,7 @@ on:
     paths:
       - '**/package.json'
       - '**/package-lock.json'
-      - '**/Dockerfile'
-      - '.github/workflows/*-ignore-list.xml'
+      - '.github/*-ignore-list.xml'
       - '.github/workflows/security.yml'
 
 jobs:
