@@ -1,7 +1,7 @@
 {
   "name": "@finos/fin-ocr-sdk",
   "type": "module",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Optical Character Recognition SDK",
   "author": "Keith Smith <keithsmithccc@gmail.com>",
   "scripts": {
