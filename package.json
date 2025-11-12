@@ -1,5 +1,5 @@
 {
-  "name": "@discoverfinancial/fin-ocr-sdk",
+  "name": "@finos/fin-ocr-sdk",
   "type": "module",
   "version": "1.0.0",
   "description": "Optical Character Recognition SDK",
