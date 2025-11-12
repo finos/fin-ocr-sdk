@@ -36,5 +36,8 @@
     "jimp": "^0.22.10",
     "mirada": "^0.0.15",
     "tesseract.js": "^4.1.4"
+  },
+  "overrides": {
+    "min-document": "2.19.2"
   }
 }
