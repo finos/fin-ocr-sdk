@@ -1,7 +1,7 @@
 {
   "name": "@finos/fin-ocr-sdk",
   "type": "module",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Optical Character Recognition SDK",
   "author": "Keith Smith <keithsmithccc@gmail.com>",
   "scripts": {
@@ -36,5 +36,8 @@
     "jimp": "^0.22.10",
     "mirada": "^0.0.15",
     "tesseract.js": "^4.1.4"
+  },
+  "overrides": {
+    "min-document": "2.19.2"
   }
 }
