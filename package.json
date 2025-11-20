@@ -5,7 +5,9 @@
   "description": "Optical Character Recognition SDK",
   "author": "Keith Smith <keithsmithccc@gmail.com>",
   "scripts": {
-    "build": "npm install && tsc",
+    "build": "npm run build:cjs && npm run build:esm",
+    "build:cjs": "npm install && tsc -p tsconfig.cjs.json",
+    "build:esm": "npm install && tsc -p tsconfig.esm.json",
     "test": "jest --coverage --coverageReporters=\"json-summary\" --detectOpenHandles",
     "doit": "ts-node src/micrParser",
     "scan": "auditjs ossi",
@@ -13,6 +15,10 @@
   },
   "main": "./build/index.js",
   "types": "./build/index.d.ts",
+  "exports": {
+    "require": "./build/cjs/index.js",
+    "import": "./build/esm/index.js"
+  },
   "files": [
     "build"
   ],
