@@ -34,6 +34,50 @@ npm link @finos/fin-ocr-sdk
 ```
 You can now import and use the SDK in your project just as you would with any npm package.
 
+<details>
+<summary><strong>Note for users with restricted npm global path</strong></summary>
+
+If the normal global path for npm is restricted on your corporate machine, you can still use `npm link` by following these steps:
+
+### For Unix-like Systems (Linux/macOS):
+
+1. **Set up a local npm prefix:**
+   - Configure npm to use a local directory for global installations. This allows you to use `npm link` without requiring access to the restricted global path.
+   - Run the following command:
+     ```bash
+     npm config set prefix ~/.npm-global
+     ```
+   - This changes the global installation directory to `~/.npm-global`, which should be accessible even with corporate restrictions.
+
+2. **Add the new npm global directory to your PATH:**
+   - Add the following line to your `.bashrc`, `.zshrc`, or corresponding shell configuration file:
+     ```bash
+     export PATH=~/.npm-global/bin:$PATH
+     ```
+   - Then, source the file to update your current shell session:
+     ```bash
+     source ~/.bashrc  # or source ~/.zshrc
+     ```
+
+3. **Use `npm link` as usual:**
+
+### For Windows Users:
+
+1. **Set up a local npm prefix:**
+   - Configure npm to use a local directory for global installations by running the following command in your terminal (Command Prompt or PowerShell):
+     ```bash
+     npm config set prefix "%USERPROFILE%\npm-global"
+     ```
+   - This changes the global installation directory to `%USERPROFILE%\npm-global`, which is within your user profile and should be accessible despite corporate restrictions.
+
+2. **Add the new npm global directory to your PATH:**
+   - Open the Environment Variables settings in Windows.
+   - Add `%USERPROFILE%\npm-global\bin` to your `PATH` variable.
+
+3. **Use `npm link` as usual:**
+
+</details>
+
 ### Design
 
 This SDK is designed to be browser and mobile friendly.
