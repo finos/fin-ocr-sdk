@@ -1,18 +1,23 @@
 {
   "name": "@finos/fin-ocr-sdk",
-  "type": "module",
-  "version": "1.0.1",
+  "version": "1.0.5",
   "description": "Optical Character Recognition SDK",
   "author": "Keith Smith <keithsmithccc@gmail.com>",
   "scripts": {
-    "build": "npm install && tsc",
+    "build": "npm run build:cjs && npm run build:esm",
+    "build:cjs": "npm install && tsc -p tsconfig.cjs.json",
+    "build:esm": "npm install && tsc -p tsconfig.esm.json",
     "test": "jest --coverage --coverageReporters=\"json-summary\" --detectOpenHandles",
     "doit": "ts-node src/micrParser",
     "scan": "auditjs ossi",
     "scan-license": "node-license-validator . --allow-licenses Apache-2.0 MIT BSD-2-Clause BSD BSD-3-Clause Unlicense"
   },
-  "main": "./build/index.js",
-  "types": "./build/index.d.ts",
+  "main": "./build/cjs/index.js",
+  "types": "./build/cjs/index.d.ts",
+  "exports": {
+    "require": "./build/cjs/index.js",
+    "import": "./build/esm/index.js"
+  },
   "files": [
     "build"
   ],
@@ -20,6 +25,11 @@
     "typescript"
   ],
   "license": "Apache-2.0",
+  "homepage": "https://github.com/finos/fin-ocr-sdk#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/finos/fin-ocr-sdk.git"
+  },
   "devDependencies": {
     "@jimp/types": "^0.22.10",
     "@types/jest": "^29.5.12",

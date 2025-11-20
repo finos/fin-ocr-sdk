@@ -1,9 +1,9 @@
-[![FINOS - Incubating](https://cdn.jsdelivr.net/gh/finos/contrib-toolbox@master/images/badge-incubating.svg)](https://community.finos.org/docs/governance/Software-Projects/stages/incubating) [![Contributors-Invited](https://img.shields.io/badge/Contributors-Wanted-blue)](./CONTRIBUTE.md)
+[![FINOS - Incubating](https://cdn.jsdelivr.net/gh/finos/contrib-toolbox@master/images/badge-incubating.svg)](https://community.finos.org/docs/governance/Software-Projects/stages/incubating) [![Contributors-Invited](https://img.shields.io/badge/Contributors-Wanted-blue)](https://github.com/finos/fin-ocr-sdk/blob/main/CONTRIBUTE.md)
 # FIN OCR SDK
 
 This package is a browser and mobile-friendly SDK which provides typescript programmatic APIs to perform OCR (Optical Character Recognition).
 
-> **NOTE:** This SDK is not yet published to npm. It must be cloned and built locally until it is published.
+> **NOTE:** This SDK is now [available on npm](https://www.npmjs.com/package/@finos/fin-ocr-sdk). If you'd like to build and test local changes to the SDK, you'll find instructions in our [developer guide](./DEV_GUIDE.md).
 
 The initial use case supports OCR of bank checks in order to return the routing, account, and check number fields; however, it is designed to support other use cases in the future.
 
@@ -73,4 +73,4 @@ SPDX-License-Identifier: [Apache-2.0](https://spdx.org/licenses/Apache-2.0)
 
 ### Links
 
-- [Release Notes](./RELEASE_NOTES.md)
+- [Release Notes](https://github.com/finos/fin-ocr-sdk/blob/main/RELEASE_NOTES.md)
