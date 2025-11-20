@@ -3,7 +3,7 @@
 
 This package is a browser and mobile-friendly SDK which provides typescript programmatic APIs to perform OCR (Optical Character Recognition).
 
-> **NOTE:** This SDK is not yet published to npm. It must be cloned and built locally until it is published.
+> **NOTE:** This SDK is now [available on npm](https://www.npmjs.com/package/@finos/fin-ocr-sdk). If you'd like to build and test local changes to the SDK, you'll find instructions in our [developer guide](./DEV_GUIDE.md).
 
 The initial use case supports OCR of bank checks in order to return the routing, account, and check number fields; however, it is designed to support other use cases in the future.
 
